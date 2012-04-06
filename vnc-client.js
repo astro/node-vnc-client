@@ -45,6 +45,16 @@ exports.VNCClient = VNCClient;
 
 VNCClient.prototype.onConnect = function() {
     this.state = STATE_HANDSHAKE;
+
+    var emit = this.emit.bind(this);
+    var socket = this.socket;
+    function proxyEvent(event) {
+	socket.on(event, emit.bind(null, event));
+    }
+    proxyEvent('drain');
+    proxyEvent('end');
+    proxyEvent('close');
+    proxyEvent('error');
 };
 
 VNCClient.prototype.onClose = function() {
@@ -263,5 +273,5 @@ VNCClient.prototype.requestUpdate = function(x, y, w, h) {
     b.writeUInt16BE(y, 4);
     b.writeUInt16BE(w, 6);
     b.writeUInt16BE(h, 8);
-    this.socket.write(b);
+    return this.socket.write(b);
 };
