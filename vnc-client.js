@@ -210,27 +210,33 @@ VNCClient.prototype.onRectangle = function(x, y, w, h, encoding, data) {
 	return;
     }
 
+    var readFun;
+    switch(this.pixelFormat.bpp) {
+	case 8:
+	    readFun = 'readInt8';
+	    break;
+	case 16:
+	    readFun = this.pixelFormat.bigEndian ?
+		'readUInt16BE' :
+		'readUInt16LE';
+	    break;
+	case 32:
+	    readFun = this.pixelFormat.bigEndian ?
+		'readUInt32BE' :
+		'readUInt32LE';
+	    break;
+	default:
+	    throw new Error("Unsupported bpp " + this.pixelFormat.bpp);
+    }
+    var read = data[readFun].bind(data);
+    var offsetDelta = Math.ceil(this.pixelFormat.bpp / 8);
+
     var x1, y1, offset = 0, pixels = [];
     for(y1 = y; y1 < y + h; y1++) {
 	var line = [];
 	for(x1 = x; x1 < x + w; x1++) {
-	    var pixel;
-	    switch(this.pixelFormat.bpp) {
-	    case 8:
-		pixel = data.readInt8(offset);
-		offset++;
-		break;
-	    case 16:
-		pixel = data.readUInt16BE(offset);
-		offset += 2;
-		break;
-	    case 32:
-		pixel = data.readUInt32BE(offset);
-		offset += 4;
-		break;
-	    default:
-		throw new Error("Unsupported bpp " + this.pixelFormat.bpp);
-	    }
+	    var pixel = read(offset);
+	    offset += offsetDelta;
 
 	    var rgb = [
 		(pixel >> this.pixelFormat.rShift) & this.pixelFormat.rMax,
