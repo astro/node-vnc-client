@@ -265,30 +265,3 @@ VNCClient.prototype.requestUpdate = function(x, y, w, h) {
     b.writeUInt16BE(h, 8);
     this.socket.write(b);
 };
-
-
-/*var rfb = new VNCClient("localhost", 5900, "tim");
-rfb.on('init', function(params) {
-    console.log('init', params);
-
-    console.log('requestUpdate', 0, 0, 80, 80);
-    rfb.requestUpdate(0, 0, 100, 100);
-    rfb.on('rect', function(rect) {
-	//console.log("rect", rect);
-	rect.pixels.forEach(function(line) {
-	    var s = "";
-	    line.forEach(function(rgb) {
-		var s1 = rgb[2].toString(16);
-		while(s1.length < 2)
-		    s1 = "0" + s1;
-		s += s1[1];
-	    });
-	    console.log(s);
-	});
-	rfb.requestUpdate(0, 0, 40, 40);
-    });
-});*/
-
-/*setTimeout(function() {
-    console.log("Hrm");
-}, 5000);*/
