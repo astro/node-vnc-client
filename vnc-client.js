@@ -43,6 +43,13 @@ function VNCClient(host, display, password) {
 util.inherits(VNCClient, process.EventEmitter);
 exports.VNCClient = VNCClient;
 
+VNCClient.prototype.error = function(message) {
+    if (this.socket.writable)
+	this.socket.end();
+
+    this.emit('error', new Error(message));
+};
+
 VNCClient.prototype.onConnect = function() {
     this.state = STATE_HANDSHAKE;
 
@@ -86,10 +93,10 @@ VNCClient.prototype.onData = function(data) {
 		    this.socket.write("RFB 003.007\n");
 		    this.state = STATE_AUTH;
 		} else {
-		    this.emit('error', new Error("Protocol version "+maj+"."+min+" not implemented"));
+		    this.error("Protocol version "+maj+"."+min+" not implemented");
 		}
 	    } else {
-		this.emit('error', new Error("Invalid protocol handshake"));
+		this.error("Invalid protocol handshake");
 	    }
 	}
 	break;
@@ -119,7 +126,7 @@ VNCClient.prototype.onData = function(data) {
 		this.socket.write(new Buffer([2]));
 		this.state = STATE_AUTH_VNC;
 	    } else {
-		this.emit('error', new Error("VNC Authentication not offered"));
+		this.error("VNC Authentication not offered");
 	    }
 	}
 	break;
@@ -145,7 +152,7 @@ console.log("response", response.length);
 		this.socket.write(new Buffer([1]));
 		this.state = STATE_INIT;
 	    } else {
-		this.emit('error', new Error("Authentication failure"));
+		this.error("Authentication failure");
 	    }
 	}
 	break;
@@ -182,7 +189,7 @@ console.log("response", response.length);
 		}
 		break;
 	    default:
-		this.emit('error', new Error("Unknown message type"));
+		this.error("Unknown message type");
 	    }
 	}
 	break;
@@ -216,7 +223,7 @@ console.log("response", response.length);
 
 VNCClient.prototype.onRectangle = function(x, y, w, h, encoding, data) {
     if (encoding !== ENCODING_RAW) {
-	this.emit('error', new Error("Received something else than RAW encoding"));
+	this.error("Received something else than RAW encoding");
 	return;
     }
 
@@ -236,7 +243,8 @@ VNCClient.prototype.onRectangle = function(x, y, w, h, encoding, data) {
 		'readUInt32LE';
 	    break;
 	default:
-	    throw new Error("Unsupported bpp " + this.pixelFormat.bpp);
+	    this.error("Unsupported bpp " + this.pixelFormat.bpp);
+	    return;
     }
     var read = data[readFun].bind(data);
     var offsetDelta = Math.ceil(this.pixelFormat.bpp / 8);
