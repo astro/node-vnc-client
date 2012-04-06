@@ -32,7 +32,7 @@ function parsePixelFormat(buf) {
 }
 
 
-function RFBProto(host, port, password) {
+function VNCClient(host, port, password) {
     this.password = password;
     this.socket = net.createConnection(port, host);
     this.recvBuf = new Buffer(0);
@@ -40,18 +40,18 @@ function RFBProto(host, port, password) {
     this.socket.on('data', this.onData.bind(this));
     this.socket.on('close', this.onClose.bind(this));
 }
-util.inherits(RFBProto, process.EventEmitter);
-exports.RFBProto = RFBProto;
+util.inherits(VNCClient, process.EventEmitter);
+exports.VNCClient = VNCClient;
 
-RFBProto.prototype.onConnect = function() {
+VNCClient.prototype.onConnect = function() {
     this.state = STATE_HANDSHAKE;
 };
 
-RFBProto.prototype.onClose = function() {
+VNCClient.prototype.onClose = function() {
     console.warn("RFB connection closed");
 };
 
-RFBProto.prototype.onData = function(data) {
+VNCClient.prototype.onData = function(data) {
     if (data) {
 	var recvBuf = new Buffer(this.recvBuf.length + data.length);
 	this.recvBuf.copy(recvBuf);
@@ -204,7 +204,7 @@ console.log("response", response.length);
     }
 };
 
-RFBProto.prototype.onRectangle = function(x, y, w, h, encoding, data) {
+VNCClient.prototype.onRectangle = function(x, y, w, h, encoding, data) {
     if (encoding !== ENCODING_RAW) {
 	this.emit('error', new Error("Received something else than RAW encoding"));
 	return;
@@ -249,7 +249,7 @@ RFBProto.prototype.onRectangle = function(x, y, w, h, encoding, data) {
     });
 };
 
-RFBProto.prototype.requestUpdate = function(x, y, w, h) {
+VNCClient.prototype.requestUpdate = function(x, y, w, h) {
     var b = new Buffer(10);
     b[0] = 3;
     b[1] = 0;
@@ -261,7 +261,7 @@ RFBProto.prototype.requestUpdate = function(x, y, w, h) {
 };
 
 
-/*var rfb = new RFBProto("localhost", 5900, "tim");
+/*var rfb = new VNCClient("localhost", 5900, "tim");
 rfb.on('init', function(params) {
     console.log('init', params);
 
