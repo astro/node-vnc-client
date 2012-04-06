@@ -32,9 +32,9 @@ function parsePixelFormat(buf) {
 }
 
 
-function VNCClient(host, port, password) {
+function VNCClient(host, display, password) {
     this.password = password;
-    this.socket = net.createConnection(port, host);
+    this.socket = net.createConnection((display || 0) + 5900, host);
     this.recvBuf = new Buffer(0);
     this.socket.on('connect', this.onConnect.bind(this));
     this.socket.on('data', this.onData.bind(this));
