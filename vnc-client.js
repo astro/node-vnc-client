@@ -1,6 +1,6 @@
 var util = require('util');
 var net = require('net');
-var crypto = require('crypto');
+var des = require('des');
 
 const STATE_HANDSHAKE = 0,
     STATE_AUTH = 1,
@@ -135,11 +135,7 @@ VNCClient.prototype.onData = function(data) {
 	    var challenge = this.recvBuf.slice(0, 16);
 	    this.recvBuf = this.recvBuf.slice(16);
 
-	    var des = crypto.createCipher('des', this.password);
-	    var response = des.update(challenge, 'binary', 'base64');
-	    response += des.final('base64');
-	    response = new Buffer(response, 'base64');
-console.log("response", response.length);
+	    var response = des.encrypt(this.password, challenge);
 	    this.socket.write(response);
 	    this.state = STATE_AUTH_RES;
 	}

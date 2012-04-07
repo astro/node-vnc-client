@@ -3,7 +3,7 @@
 , "main": "./vnc-client.js"
 , "description": "VNC client implementation in JavaScript for node.js"
 , "author": "Astro"
-, "dependencies": {}
+, "dependencies": { "des": ">= 3.0.2" }
 , "devDependencies": { "sdl": ">= 0.1.7" }
 , "repositories": [{ "type": "git"
 		   , "path": "git://github.com/astro/node-vnc-client.git"
