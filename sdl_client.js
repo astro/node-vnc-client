@@ -29,14 +29,21 @@ rfb.on('init', function(params) {
 	    }
 	}
 	SDL.flip(screen);
-
-	poll();
     });
 
+
+    var canRequest = true;
+    rfb.on('drain', function() {
+	canRequest = true;
+    });
     function poll() {
+	if (!canRequest)
+	    return;
+
 	console.log("requestUpdate", xOffset, yOffset, TILE_SIZE, TILE_SIZE, "w", w, "h", h);
-	rfb.requestUpdate(xOffset, yOffset,
-	    Math.min(w - xOffset, TILE_SIZE), Math.min(h - yOffset, TILE_SIZE));
+	canRequest =
+	    rfb.requestUpdate(xOffset, yOffset,
+		Math.min(w - xOffset, TILE_SIZE), Math.min(h - yOffset, TILE_SIZE));
 
 	xOffset += TILE_SIZE;
 	if (xOffset >= w) {
@@ -47,5 +54,5 @@ rfb.on('init', function(params) {
 	    }
 	}
     }
-    poll();
+    setInterval(poll, 10);
 });
