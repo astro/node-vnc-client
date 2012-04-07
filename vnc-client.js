@@ -161,7 +161,7 @@ console.log("response", response.length);
 	    var nameLen = this.recvBuf.readUInt32BE(20);
 	    if (this.recvBuf.length >= 24 + nameLen) {
 		this.width = this.recvBuf.readUInt16BE(0);
-		this.height = this.recvBuf.readUInt16BE(0);
+		this.height = this.recvBuf.readUInt16BE(2);
 		this.name = this.recvBuf.slice(24, 24 + nameLen).toString();
 		this.pixelFormat = parsePixelFormat(this.recvBuf.slice(4, 20));
 
