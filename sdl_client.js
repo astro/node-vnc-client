@@ -1,11 +1,17 @@
 var SDL = require('sdl');
 var VNCClient = require('./vnc-client').VNCClient;
 
+if (process.argv.length < 3) {
+    console.error("Usage:" + process.argv[0] + " " + process.argv[1] + " <host> [display#] [password]");
+    process.exit(1);
+}
+
+
 SDL.init(SDL.INIT.VIDEO);
 
 const TILE_SIZE = 128;
 
-var rfb = new VNCClient("localhost", 5900);
+var rfb = new VNCClient(process.argv[2], parseInt(process.argv[3] || "0", 10), process.argv[4]);
 rfb.on('init', function(params) {
     console.log('init', params);
     var w = params.width, h = params.height;
