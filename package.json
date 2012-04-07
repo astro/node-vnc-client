@@ -1,8 +1,11 @@
 { "name": "vnc-client"
-, "version": "0.0.1"
+, "version": "0.0.0"
 , "main": "./vnc-client.js"
 , "description": "VNC client implementation in JavaScript for node.js"
-, "author": "Astro"
+, "author": { "name": "Astro"
+  	    , "email": "astro@spaceboyz.net"
+ 	    , "web": "http://spaceboyz.net/~astro/"
+ 	    }
 , "dependencies": { "des": ">= 3.0.2" }
 , "devDependencies": { "sdl": ">= 0.1.7" }
 , "repositories": [{ "type": "git"
