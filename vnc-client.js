@@ -123,8 +123,12 @@ VNCClient.prototype.onData = function(data) {
 		this.socket.write(new Buffer([1]));
 		this.state = STATE_INIT;
 	    } else if (vncAuth) {
-		this.socket.write(new Buffer([2]));
-		this.state = STATE_AUTH_VNC;
+		if (typeof this.password === 'string') {
+		    this.socket.write(new Buffer([2]));
+		    this.state = STATE_AUTH_VNC;
+		} else {
+		    this.error("Password required");
+		}
 	    } else {
 		this.error("VNC Authentication not offered");
 	    }
